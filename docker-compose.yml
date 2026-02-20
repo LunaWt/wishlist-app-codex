@@ -7,8 +7,6 @@ services:
       POSTGRES_DB: wishlist
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - '5432:5432'
     volumes:
       - wishlist_pgdata:/var/lib/postgresql/data
     healthcheck:

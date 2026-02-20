@@ -32,11 +32,6 @@ event_type = sa.Enum(
 
 
 def upgrade() -> None:
-    wishlist_status.create(op.get_bind(), checkfirst=True)
-    item_mode.create(op.get_bind(), checkfirst=True)
-    item_status.create(op.get_bind(), checkfirst=True)
-    event_type.create(op.get_bind(), checkfirst=True)
-
     op.create_table(
         'users',
         sa.Column('id', sa.Uuid(), nullable=False),

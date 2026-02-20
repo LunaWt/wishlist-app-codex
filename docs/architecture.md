@@ -1,80 +1,111 @@
-# Social Wishlist — Architecture
+# Social Wishlist - архитектура (v1)
 
-## 1. Product goals and readiness criteria
+## 1. Цель продукта и критерии готовности
 
-### Goals
-- Let owners create themed wishlists and share public links.
-- Let friends reserve gifts or contribute to expensive gifts together.
-- Preserve surprise: owner sees aggregate state only, never identities or personal contribution amounts.
-- Update all open sessions in realtime.
+### Цель
+Дать пользователю возможность:
+- создавать вишлисты (повод, дата, описание);
+- делиться публичной ссылкой без регистрации получателя;
+- избегать дублирующихся подарков через резерв;
+- собирать совместные подарки через вклады;
+- сохранять сюрприз (владелец не видит, кто и сколько внёс).
 
-### Ready-for-demo criteria
-- Auth (email/password + Google OAuth) works.
-- Public link works without registration.
-- Reserve and contribution flows work with race-condition guards.
-- Realtime updates visible without refresh.
-- Mobile layout is usable (360px).
-
----
-
-## 2. Roles and permission matrix
-
-| Action | Anonymous | Guest session | Owner |
-|---|---|---|---|
-| Open published wishlist link | ? | ? | ? |
-| Reserve single gift | ? | ? | ? (owner flow disabled) |
-| Contribute to group gift | ? | ? | ? (owner flow disabled) |
-| Create/edit wishlist | ? | ? | ? |
-| Publish/close wishlist | ? | ? | ? |
-| See who reserved/contributed | ? | ? | ? |
+### Definition of Done (готово к сдаче)
+- Email/пароль auth + Google OAuth работают.
+- Публичная ссылка работает без логина.
+- Резерв и вклады работают транзакционно.
+- Realtime-обновления приходят без перезагрузки.
+- Владелец видит только агрегаты, без персоналий.
+- UI адаптивен на мобильных (минимум 360px).
+- Есть Docker, CI, README, документы для сдачи.
 
 ---
 
-## 3. Main use cases
+## 2. Роли и матрица прав
 
-### Owner
-1. Register/login.
-2. Create wishlist.
-3. Add items (single or group mode).
-4. Publish list -> receives share slug.
-5. Observe aggregate status in realtime.
+| Действие | Anonymous | Guest Session | Owner |
+|---|---:|---:|---:|
+| Смотреть опубликованный вишлист | ✅ | ✅ | ✅ |
+| Резервировать single-item | ❌ | ✅ | ❌ |
+| Вносить вклад в group-item | ❌ | ✅ | ❌ |
+| Создавать/редактировать список | ❌ | ❌ | ✅ |
+| Публиковать/закрывать список | ❌ | ❌ | ✅ |
+| Видеть, кто внёс/зарезервировал | ❌ | Только себя | ❌ |
 
-### Guest
-1. Open public link without account.
-2. Start guest session with a display name.
-3. Reserve single item OR contribute to group item.
-4. Receive realtime updates when others act.
-
-### Anonymous
-1. Open link and browse.
-2. Must create guest session before reserve/contribution.
+> Владелец никогда не получает идентифицирующие данные гостей в API/UI.
 
 ---
 
-## 4. C4-lite overview
+## 3. Основные пользовательские сценарии
 
-### Context
-- **Web client (Next.js)**
-- **API (FastAPI)**
-- **PostgreSQL**
-- **OAuth provider (Google)**
+### Owner flow
+1. Регистрация/логин.
+2. Создание списка.
+3. Добавление товаров (`single` или `group`).
+4. Публикация списка и получение `share_slug`.
+5. Наблюдение за статусами/прогрессом в realtime.
 
-### Containers
-- Frontend deployed on Vercel.
-- Backend deployed on Render.
-- Managed Postgres on Neon.
+### Guest flow
+1. Открытие публичной ссылки.
+2. Создание guest-session (имя + токен сессии).
+3. Резерв single-товара или вклад в group-товар.
+4. Получение realtime обновлений.
 
-### Key backend components
-- Auth module (credentials + OAuth)
-- Wishlist owner module
-- Public module (guest actions)
-- Realtime gateway (WebSocket)
-- Link preview service (OpenGraph/JSON-LD parser + cache)
+### Anonymous flow
+1. Может просматривать.
+2. Для действий должен создать guest-session.
 
 ---
 
-## 5. Data model (tables)
+## 4. C4-lite: контекст и контейнеры
 
+## 4.1 Context
+- **Web client**: Next.js.
+- **API**: FastAPI.
+- **DB**: PostgreSQL.
+- **OAuth provider**: Google.
+
+## 4.2 Containers
+- Frontend: Vercel (цель deploy).
+- Backend: Render (Docker image).
+- PostgreSQL: Neon (prod), Postgres в Docker (local).
+
+## 4.3 Backend компоненты
+- `auth` - credentials + OAuth + cookie-based session.
+- `wishlists` - owner CRUD и lifecycle.
+- `public` - публичные read/write действия через guest-session.
+- `realtime` - WebSocket и event-log.
+- `preview` - парсинг метаданных URL + cache + SSRF guard.
+
+---
+
+## 5. Технологический стек
+
+### Frontend
+- Next.js 16 (App Router, TypeScript)
+- TailwindCSS
+- React Query
+- react-hook-form + zod
+- WebSocket клиент + fallback polling/events
+
+### Backend
+- FastAPI
+- SQLAlchemy 2.x async
+- Alembic
+- Pydantic v2
+- authlib (Google OAuth)
+- passlib (password hashing)
+
+### Infra/Quality
+- Docker / docker-compose
+- GitHub Actions CI
+- Pytest + Vitest + Playwright
+
+---
+
+## 6. Модель данных
+
+## 6.1 Таблицы
 - `users`
 - `oauth_accounts`
 - `wishlists`
@@ -85,16 +116,25 @@
 - `realtime_events`
 - `link_previews`
 
-### Important constraints
-- `wishlists.share_slug` unique.
-- `reservations.item_id` unique (single current reservation state per item).
-- `wishlist_items.collected_amount` maintained transactionally.
+## 6.2 Важные ограничения
+- `wishlists.share_slug` - unique.
+- `reservations.item_id` - unique (один активный резерв на single-item).
+- Денежные поля - `Numeric(12,2)`.
+- `wishlist_items.collected_amount` изменяется транзакционно.
+
+## 6.3 Enum/статусы
+- `wishlist_status`: `draft | published | closed`
+- `item_mode`: `single | group`
+- `item_status`: `active | archived | unavailable`
+- `event_type`: `item_reserved | item_unreserved | contribution_added | item_updated | item_archived | wishlist_published | wishlist_closed`
 
 ---
 
-## 6. API contracts
+## 7. API-контракты
 
-### Auth
+Все endpoints под префиксом: `/api/v1`
+
+## 7.1 Auth
 - `POST /auth/register`
 - `POST /auth/login`
 - `POST /auth/logout`
@@ -103,7 +143,7 @@
 - `GET /auth/google/start`
 - `GET /auth/google/callback`
 
-### Owner
+## 7.2 Owner API
 - `POST /wishlists`
 - `GET /wishlists/mine`
 - `GET /wishlists/{id}`
@@ -115,7 +155,7 @@
 - `POST /wishlists/{id}/items/{item_id}/archive`
 - `POST /wishlists/{id}/items/reorder`
 
-### Public
+## 7.3 Public API
 - `GET /public/w/{share_slug}`
 - `POST /public/w/{share_slug}/guest-session`
 - `POST /public/w/{share_slug}/items/{item_id}/reserve`
@@ -124,14 +164,39 @@
 - `GET /public/w/{share_slug}/events?cursor=...`
 - `WS /ws/public/w/{share_slug}`
 
-### Utility
+## 7.4 Utility API
 - `POST /items/preview`
 
 ---
 
-## 7. Realtime protocol
+## 8. Контракт приватности (критично)
 
-### Event shape
+### Owner view
+Получает только:
+- `is_reserved`
+- `collected_amount`
+- `target_amount`
+- `progress_percent`
+
+Не получает:
+- guest identity
+- individual contribution amounts
+- guest/session metadata
+
+### Guest view
+Получает:
+- `reserved_by_you`
+- `my_contribution`
+- публичные агрегаты item статуса
+
+---
+
+## 9. Realtime протокол
+
+## 9.1 Канал
+- `WS /api/v1/ws/public/w/{share_slug}`
+
+## 9.2 Событие
 ```json
 {
   "id": 120,
@@ -146,83 +211,102 @@
 }
 ```
 
-### Reconnect strategy
-- Client reconnects automatically after disconnect.
-- Client refetches wishlist query.
-- Optional event cursor API can backfill missed updates.
+## 9.3 Потеря соединения
+- клиент делает auto-reconnect;
+- после reconnect обновляет данные через обычный fetch;
+- при необходимости читает пропущенные события через cursor endpoint.
 
 ---
 
-## 8. Privacy and security
+## 10. Политика edge-cases
 
-### Privacy guarantees
-- Owner item view includes only aggregate fields (`is_reserved`, `collected_amount`, progress).
-- Identity and per-person contribution values are never returned in owner responses.
-
-### Security
-- JWT access + refresh in httpOnly cookies.
-- Google OAuth via Authlib.
-- CORS restricted by env.
-- Link preview endpoint blocks non-http(s), localhost and private IP ranges (SSRF guard).
-- Input validation via Pydantic / Zod.
+1. **Race reserve**: первый коммит побеждает, второй получает 409.
+2. **Oversubscribe**: вклад ограничивается остатком до target.
+3. **Удаление товара с активностью**: только soft-archive.
+4. **Сломанный URL preview**: fallback на ручное заполнение.
+5. **Owner открывает public URL**: owner-safe режим.
+6. **Закрытый wishlist**: нельзя новые резервы/вклады.
+7. **Недособранная сумма**: `partially funded` (pledge only, без платежей).
 
 ---
 
-## 9. Edge-case behavior
+## 11. Безопасность
 
-1. Reservation race -> row lock + conflict response.
-2. Contribution overflow -> accepted amount is capped to remaining target.
-3. Item with historical commitments -> soft archive only.
-4. Broken product URL -> manual entry still available.
-5. Owner opening public link -> owner view, not guest flow.
-6. Closed wishlist -> no new reserve/contribution actions.
-
----
-
-## 10. Non-functional requirements
-
-- Mobile-first responsive UI.
-- Realtime perceived latency target: <1s in normal conditions.
-- Stable API schema with generated shared types.
-- CI runs lint/test/build gates.
+- JWT access/refresh в httpOnly cookies.
+- CORS ограничивается `CORS_ORIGINS`.
+- Валидация входа на backend (Pydantic) и frontend (zod).
+- SSRF guard в URL preview:
+  - запрет `file://`, `ftp://`, локальных/приватных сетей и localhost.
+- Ограничения ролей в каждом endpoint.
 
 ---
 
-## 11. Test strategy
+## 12. Нефункциональные требования
+
+- Mobile-first верстка.
+- Realtime UX latency target: < 1 сек в нормальной сети.
+- Предсказуемая сборка через Docker.
+- Повторяемость запуска через README.
+
+---
+
+## 13. Тестовая стратегия
 
 ### Backend
-- pytest async flow test for auth + publish + reserve + contribution.
+- `pytest` интеграционный сценарий:
+  - register/login
+  - create/publish wishlist
+  - guest session
+  - reserve + contribution
+  - owner privacy response
 
 ### Frontend
-- Vitest unit test (utilities).
-- Playwright smoke test for landing page.
+- `vitest` unit тест утилит.
+- `playwright` smoke e2e.
 
-### Acceptance checks
-- End-to-end manual flow from owner creation to guest actions and realtime updates.
-
----
-
-## 12. Deployment topology and env vars
-
-### Environments
-- **Vercel**: Next.js app (`apps/web`)
-- **Render**: FastAPI container (`apps/api`)
-- **Neon**: Postgres DB
-
-### Key env vars
-- API: `DATABASE_URL`, `SECRET_KEY`, `SESSION_SECRET`, `FRONTEND_URL`, `CORS_ORIGINS`, OAuth vars
-- Web: `NEXT_PUBLIC_API_URL`
-
-### Rollback
-- Vercel: revert to previous deployment.
-- Render: rollback to previous service revision.
-- DB schema rollback via Alembic downgrade (if needed and safe).
+### CI gates
+- lint
+- tests
+- build
 
 ---
 
-## 13. Risks and mitigations
+## 14. Deployment topology и rollback
 
-1. **OAuth credentials missing** -> credentials auth remains fully operational.
-2. **Network instability for WebSockets** -> reconnect + REST refetch fallback.
-3. **Parsing variance in link preview** -> graceful partial metadata + manual edit.
-4. **Concurrency bugs** -> row-level locks and conflict handling in critical mutations.
+## 14.1 Topology
+- Web -> Vercel (`apps/web`)
+- API -> Render (`infra/docker/api.Dockerfile`)
+- DB -> Neon PostgreSQL
+
+## 14.2 Environment variables
+- API:
+  - `DATABASE_URL`
+  - `SECRET_KEY`
+  - `SESSION_SECRET`
+  - `ACCESS_TOKEN_EXPIRE_MINUTES`
+  - `REFRESH_TOKEN_EXPIRE_DAYS`
+  - `FRONTEND_URL`
+  - `CORS_ORIGINS`
+  - `GOOGLE_CLIENT_ID`
+  - `GOOGLE_CLIENT_SECRET`
+  - `GOOGLE_REDIRECT_URI`
+- WEB:
+  - `NEXT_PUBLIC_API_URL`
+
+## 14.3 Rollback
+- Vercel: rollback на предыдущий deploy.
+- Render: rollback на предыдущую ревизию.
+- DB: откат миграций Alembic (если безопасно).
+
+---
+
+## 15. Риски и mitigation
+
+1. **Нет OAuth credentials**  
+   Mitigation: credentials-auth работает независимо.
+2. **Нестабильный WebSocket**  
+   Mitigation: reconnect + refetch + events fallback.
+3. **Низкое качество метаданных URL**  
+   Mitigation: partial preview + ручное редактирование.
+4. **Конкурентные гонки**  
+   Mitigation: транзакции, lock/select-for-update, 409 handling.

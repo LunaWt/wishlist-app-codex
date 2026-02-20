@@ -1,29 +1,31 @@
-# Demo script (3–5 minutes)
+# Demo script (3-5 минут)
 
-## 0:00–0:30 — Intro
-- Open landing page.
-- Explain core value: no duplicate gifts + surprise-safe flow.
+## 0:00-0:30 - Вступление
+- Открыть лендинг.
+- Коротко объяснить value: "избегаем дублей подарков и сохраняем сюрприз".
 
-## 0:30–1:30 — Owner flow
-- Register/login.
-- Create wishlist.
-- Add 2 items:
-  - one single-reserve gift,
-  - one group-funding gift.
-- Use URL autofill for one item.
-- Publish wishlist and copy public link.
+## 0:30-1:40 - Owner flow
+- Зарегистрироваться/войти.
+- Создать wishlist.
+- Добавить 2 позиции:
+  - single (резерв)
+  - group (совместный сбор)
+- Для одной позиции вставить URL и показать автозаполнение.
+- Опубликовать список и скопировать публичную ссылку.
 
-## 1:30–3:30 — Guest + realtime flow
-- Open public link in second browser/incognito tab.
-- Create guest session.
-- Reserve single item.
-- Contribute to group item.
-- Show realtime updates in first tab without refresh.
+## 1:40-3:40 - Guest + realtime
+- Открыть ссылку в инкогнито/другом браузере.
+- Создать guest-session.
+- Зарезервировать single-item.
+- Внести вклад в group-item.
+- Показать мгновенное обновление в owner-вкладке (без refresh).
 
-## 3:30–4:30 — Privacy proof
-- Return to owner dashboard/public owner view.
-- Show owner sees only aggregate reservation/progress, no identities.
+## 3:40-4:30 - Proof of privacy
+- Показать owner view:
+  - видны только агрегаты (reserved/progress),
+  - не видны имена гостей и персональные суммы.
 
-## 4:30–5:00 — Technical wrap-up
-- Quick overview: Next.js + FastAPI + PostgreSQL + WebSocket.
-- Mention deploy targets and CI.
+## 4:30-5:00 - Техническое завершение
+- Коротко: Next.js + FastAPI + PostgreSQL + WebSocket.
+- Показать README, docs, тесты и CI.
+- Упомянуть deploy-цель: Vercel + Render + Neon.

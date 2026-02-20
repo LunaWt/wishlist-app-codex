@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 
 import { AppHeader } from '@/components/layout/app-header';
 import { AppProviders } from '@/components/providers/app-providers';
 
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
   title: 'WishWave | Social Wishlist',
@@ -16,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang='ru'>
-      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}>
+      <body className='bg-slate-50 text-slate-900 antialiased font-sans'>
         <AppProviders>
           <AppHeader />
           {children}
