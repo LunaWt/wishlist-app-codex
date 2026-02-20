@@ -2010,32 +2010,9 @@
             ],
             "title": "Description"
           },
-          "occasion": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Occasion"
-          },
           "currency": {
             "type": "string",
             "title": "Currency"
-          },
-          "event_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Event Date"
           },
           "status": {
             "$ref": "#/components/schemas/WishlistStatus"
@@ -2074,9 +2051,7 @@
           "id",
           "title",
           "description",
-          "occasion",
           "currency",
-          "event_date",
           "status",
           "share_slug",
           "created_at",
@@ -2107,32 +2082,9 @@
             ],
             "title": "Description"
           },
-          "occasion": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Occasion"
-          },
           "currency": {
             "type": "string",
             "title": "Currency"
-          },
-          "event_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Event Date"
           },
           "status": {
             "$ref": "#/components/schemas/WishlistStatus"
@@ -2173,9 +2125,7 @@
           "id",
           "title",
           "description",
-          "occasion",
           "currency",
-          "event_date",
           "status",
           "share_slug",
           "viewer_kind",
@@ -2337,36 +2287,12 @@
             ],
             "title": "Description"
           },
-          "occasion": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Occasion"
-          },
           "currency": {
             "type": "string",
             "maxLength": 3,
             "minLength": 3,
             "title": "Currency",
             "default": "RUB"
-          },
-          "event_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Event Date"
           }
         },
         "type": "object",
@@ -2637,32 +2563,9 @@
             ],
             "title": "Description"
           },
-          "occasion": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Occasion"
-          },
           "currency": {
             "type": "string",
             "title": "Currency"
-          },
-          "event_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Event Date"
           },
           "status": {
             "$ref": "#/components/schemas/WishlistStatus"
@@ -2694,9 +2597,7 @@
           "id",
           "title",
           "description",
-          "occasion",
           "currency",
-          "event_date",
           "status",
           "share_slug",
           "created_at",
@@ -2731,18 +2632,6 @@
             ],
             "title": "Description"
           },
-          "occasion": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Occasion"
-          },
           "currency": {
             "anyOf": [
               {
@@ -2755,18 +2644,6 @@
               }
             ],
             "title": "Currency"
-          },
-          "event_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Event Date"
           }
         },
         "type": "object",

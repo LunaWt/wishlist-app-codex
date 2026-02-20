@@ -625,12 +625,8 @@ export interface components {
             title: string;
             /** Description */
             description: string | null;
-            /** Occasion */
-            occasion: string | null;
             /** Currency */
             currency: string;
-            /** Event Date */
-            event_date: string | null;
             status: components["schemas"]["WishlistStatus"];
             /** Share Slug */
             share_slug: string | null;
@@ -658,12 +654,8 @@ export interface components {
             title: string;
             /** Description */
             description: string | null;
-            /** Occasion */
-            occasion: string | null;
             /** Currency */
             currency: string;
-            /** Event Date */
-            event_date: string | null;
             status: components["schemas"]["WishlistStatus"];
             /** Share Slug */
             share_slug: string;
@@ -735,15 +727,11 @@ export interface components {
             title: string;
             /** Description */
             description?: string | null;
-            /** Occasion */
-            occasion?: string | null;
             /**
              * Currency
              * @default RUB
              */
             currency: string;
-            /** Event Date */
-            event_date?: string | null;
         };
         /** WishlistItemCreateRequest */
         WishlistItemCreateRequest: {
@@ -802,12 +790,8 @@ export interface components {
             title: string;
             /** Description */
             description: string | null;
-            /** Occasion */
-            occasion: string | null;
             /** Currency */
             currency: string;
-            /** Event Date */
-            event_date: string | null;
             status: components["schemas"]["WishlistStatus"];
             /** Share Slug */
             share_slug: string | null;
@@ -828,12 +812,8 @@ export interface components {
             title?: string | null;
             /** Description */
             description?: string | null;
-            /** Occasion */
-            occasion?: string | null;
             /** Currency */
             currency?: string | null;
-            /** Event Date */
-            event_date?: string | null;
         };
     };
     responses: never;

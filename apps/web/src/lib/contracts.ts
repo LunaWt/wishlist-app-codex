@@ -17,9 +17,7 @@ export interface WishlistSummary {
   id: string;
   title: string;
   description: string | null;
-  occasion: string | null;
   currency: string;
-  event_date: string | null;
   status: WishlistStatus;
   share_slug: string | null;
   created_at: string;
@@ -68,9 +66,7 @@ export interface PublicWishlistView {
   id: string;
   title: string;
   description: string | null;
-  occasion: string | null;
   currency: string;
-  event_date: string | null;
   status: WishlistStatus;
   share_slug: string;
   viewer_kind: 'anonymous' | 'guest' | 'owner';

@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import Link from 'next/link';
+import { Archive, Gift, HandCoins, LinkIcon, Lock, Unlock } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,40 +41,42 @@ export function WishlistItemCard({
   const isGroup = item.mode === 'group';
 
   return (
-    <Card className='overflow-hidden'>
-      <CardContent className='space-y-3'>
+    <Card className='animate-enter overflow-hidden'>
+      <CardContent className='space-y-4'>
         <div className='flex items-start justify-between gap-3'>
           <div className='space-y-1'>
-            <h4 className='font-semibold text-slate-900'>{item.title}</h4>
-            {item.notes && <p className='text-sm text-slate-600'>{item.notes}</p>}
+            <h4 className='text-lg font-semibold text-white'>{item.title}</h4>
+            {item.notes && <p className='text-sm text-slate-300'>{item.notes}</p>}
           </div>
-          <Badge tone={item.is_reserved ? 'warning' : 'default'}>
+
+          <Badge tone={item.is_reserved ? 'warning' : 'success'}>
             {item.is_reserved ? 'Зарезервирован' : 'Свободен'}
           </Badge>
         </div>
 
-        {item.image_url && (
-          <img
-            src={item.image_url}
-            alt={item.title}
-            className='h-44 w-full rounded-xl object-cover'
-          />
+        {item.image_url ? (
+          <img src={item.image_url} alt={item.title} className='h-48 w-full rounded-2xl object-cover' />
+        ) : (
+          <div className='flex h-40 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-400'>
+            <Gift className='h-5 w-5' />
+          </div>
         )}
 
-        <div className='flex flex-wrap items-center gap-2 text-sm text-slate-600'>
+        <div className='flex flex-wrap items-center gap-3 text-sm text-slate-300'>
           {item.price && <span>Цена: {formatMoney(item.price, currency)}</span>}
           {item.product_url && (
-            <Link href={item.product_url} className='text-violet-600 hover:underline' target='_blank'>
-              Ссылка на товар
+            <Link href={item.product_url} target='_blank' className='inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200'>
+              <LinkIcon className='h-3.5 w-3.5' />
+              Перейти к товару
             </Link>
           )}
         </div>
 
         {isGroup && (
-          <div className='space-y-2 rounded-xl bg-slate-50 p-3'>
+          <div className='space-y-2 rounded-2xl border border-white/10 bg-white/5 p-3'>
             <div className='flex items-center justify-between text-sm'>
-              <span className='text-slate-600'>Собрано</span>
-              <span className='font-semibold'>
+              <span className='text-slate-300'>Собрано</span>
+              <span className='font-semibold text-white'>
                 {formatMoney(item.collected_amount, currency)} / {formatMoney(item.target_amount ?? item.price ?? 0, currency)}
               </span>
             </div>
@@ -85,16 +88,21 @@ export function WishlistItemCard({
           <div className='flex flex-wrap gap-2'>
             {!isGroup && onReserve && !item.is_reserved && (
               <Button disabled={loading} onClick={() => onReserve(item.id)}>
+                <Lock className='h-4 w-4' />
                 Забронировать
               </Button>
             )}
+
             {!isGroup && isGuestItem(item) && item.reserved_by_you && onUnreserve && (
               <Button variant='ghost' disabled={loading} onClick={() => onUnreserve(item.id)}>
+                <Unlock className='h-4 w-4' />
                 Снять резерв
               </Button>
             )}
+
             {isGroup && onContribute && (
-              <Button disabled={loading} onClick={() => onContribute(item.id)}>
+              <Button variant='secondary' disabled={loading} onClick={() => onContribute(item.id)}>
+                <HandCoins className='h-4 w-4' />
                 Внести вклад
               </Button>
             )}
@@ -103,6 +111,7 @@ export function WishlistItemCard({
 
         {ownerView && onArchive && item.status !== 'archived' && (
           <Button variant='ghost' onClick={() => onArchive(item.id)}>
+            <Archive className='h-4 w-4' />
             Архивировать
           </Button>
         )}

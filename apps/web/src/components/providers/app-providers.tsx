@@ -23,7 +23,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         {children}
-        <Toaster richColors position='top-right' />
+        <Toaster richColors position='top-right' theme='dark' />
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 from uuid import UUID
@@ -11,9 +11,7 @@ from app.models.enums import ItemMode, ItemStatus, WishlistStatus
 class WishlistCreateRequest(BaseModel):
     title: str = Field(min_length=2, max_length=180)
     description: str | None = Field(default=None, max_length=3000)
-    occasion: str | None = Field(default=None, max_length=120)
     currency: str = Field(default='RUB', min_length=3, max_length=3)
-    event_date: date | None = None
 
     @field_validator('currency')
     @classmethod
@@ -24,9 +22,7 @@ class WishlistCreateRequest(BaseModel):
 class WishlistUpdateRequest(BaseModel):
     title: str | None = Field(default=None, min_length=2, max_length=180)
     description: str | None = Field(default=None, max_length=3000)
-    occasion: str | None = Field(default=None, max_length=120)
     currency: str | None = Field(default=None, min_length=3, max_length=3)
-    event_date: date | None = None
 
     @field_validator('currency')
     @classmethod
@@ -66,9 +62,7 @@ class WishlistBaseView(BaseModel):
     id: UUID
     title: str
     description: str | None
-    occasion: str | None
     currency: str
-    event_date: date | None
     status: WishlistStatus
     share_slug: str | None
     created_at: datetime
@@ -127,9 +121,7 @@ class PublicWishlistView(BaseModel):
     id: UUID
     title: str
     description: str | None
-    occasion: str | None
     currency: str
-    event_date: date | None
     status: WishlistStatus
     share_slug: str
     viewer_kind: Literal['anonymous', 'guest', 'owner']

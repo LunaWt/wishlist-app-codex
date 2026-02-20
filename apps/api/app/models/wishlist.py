@@ -1,7 +1,7 @@
 import uuid
-from datetime import date, datetime
+from datetime import datetime
 
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, String, Text, Uuid
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -18,9 +18,7 @@ class Wishlist(TimestampMixin, Base):
     )
     title: Mapped[str] = mapped_column(String(180), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    occasion: Mapped[str | None] = mapped_column(String(120), nullable=True)
     currency: Mapped[str] = mapped_column(String(3), default='RUB', nullable=False)
-    event_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     status: Mapped[WishlistStatus] = mapped_column(
         Enum(WishlistStatus, name='wishlist_status'), default=WishlistStatus.DRAFT, nullable=False
     )

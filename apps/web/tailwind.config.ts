@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss';
+﻿import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -8,7 +8,31 @@ const config: Config = {
     './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+        },
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '-180% 0' },
+          '100%': { backgroundPosition: '180% 0' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 1.6s linear infinite',
+      },
+    },
   },
   plugins: [],
 };

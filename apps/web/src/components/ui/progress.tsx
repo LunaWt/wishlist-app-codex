@@ -7,10 +7,11 @@ interface ProgressProps {
 
 export function Progress({ value, className }: ProgressProps) {
   const safe = Math.max(0, Math.min(100, value));
+
   return (
-    <div className={cn('h-2 w-full rounded-full bg-slate-200', className)}>
+    <div className={cn('h-2.5 w-full overflow-hidden rounded-full bg-white/10', className)}>
       <div
-        className='h-2 rounded-full bg-emerald-500 transition-all duration-500'
+        className='h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-brand-500 transition-all duration-500'
         style={{ width: `${safe}%` }}
       />
     </div>

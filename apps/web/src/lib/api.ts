@@ -82,9 +82,7 @@ export const wishlistApi = {
   create(payload: {
     title: string;
     description?: string;
-    occasion?: string;
     currency?: string;
-    event_date?: string;
   }) {
     return apiFetch<OwnerWishlistDetail>('/wishlists', {
       method: 'POST',
