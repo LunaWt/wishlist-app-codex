@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: wishlist-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wishlist
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - wishlist_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d wishlist']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    container_name: wishlist-api
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/wishlist
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      COOKIE_SECURE: 'false'
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8000:8000'
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    container_name: wishlist-web
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - api
+    ports:
+      - '3000:3000'
+
+volumes:
+  wishlist_pgdata:
